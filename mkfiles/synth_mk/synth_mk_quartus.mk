@@ -1,32 +1,38 @@
 
 ifneq (1,$(RULES))
 
+SIM_TARGETS += $(TOP_MODULE).qpf $(TOP_MODULE).map $(TOP_MODULE).fit $(TOP_MODULE).sim
+
+IMG_TARGETS += $(TOP_MODULE).qpf $(TOP_MODULE).map $(TOP_MODULE).fit $(TOP_MODULE).sof $(TOP_MODULE).rbf
+
+ifneq (,$(DATAFILES_DST))
+QUARTUS_MAP_DEPS += copy_datafiles
+QUARTUS_MAP_DEPS += copy_datafiles
+endif
+
 else
 
-sim : $(TOP_MODULE).qpf $(TOP_MODULE).map $(TOP_MODULE).fit $(TOP_MODULE).sim
-
-img : $(TOP_MODULE).qpf $(TOP_MODULE).map $(TOP_MODULE).fit $(TOP_MODULE).sof $(TOP_MODULE).rbf
 
 
 ifeq (,$(wildcard $(SYNTH_DIR)/scripts/$(TOP_MODULE)_project.f))
 QPF_FLAGS += -f $(SYNTH_DIR_A)/scripts/$(TOP_MODULE)_quartus.f
 endif
 
+DATAFILES += $(SYNTH_DIR)/scripts/$(TOP_MODULE).sdc
+
 $(TOP_MODULE).qpf : 
+	echo "SYNTH_DIR=$(SYNTH_DIR)"
 	quartus_sh -t $(SYNTHSCRIPTS_DIR_A)/lib/altera/quartus_utils.tcl \
 		-project $(TOP_MODULE) \
 		-top $(TOP_MODULE) \
 		+define+FPGA \
-		$(SCRIPTS_DIR)/$(TOP_MODULE).sdc \
+		$(TOP_MODULE).sdc \
 		-family "Cyclone V" \
 		-device "$(DEVICE)" \
 		-f $(SYNTHSCRIPTS_DIR_A)/lib/altera/quartus_common_settings.f \
 		$(QPF_FLAGS)
 
-%.map : %.qpf $(MEM_FILE)
-	if test "x$(MEM_FILE)" != "x"; then \
-		cp $(MEM_FILE) $(ROM_FILE) ; \
-	fi
+%.map : %.qpf $(QUARTUS_MAP_DEPS)
 	quartus_map $(subst .qpf,,$(*))
 	touch $@
 	
