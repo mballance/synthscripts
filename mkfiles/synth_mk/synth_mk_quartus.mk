@@ -5,7 +5,9 @@ SIM_TARGETS += $(TOP_MODULE).qpf $(TOP_MODULE).map $(TOP_MODULE).fit $(TOP_MODUL
 
 IMG_TARGETS += $(TOP_MODULE).qpf $(TOP_MODULE).map $(TOP_MODULE).fit $(TOP_MODULE).sof $(TOP_MODULE).rbf
 
-ifneq (,$(DATAFILES_DST))
+DATAFILES += $(SYNTH_DIR)/scripts/$(TOP_MODULE).sdc
+
+ifneq (,$(DATAFILES))
 QUARTUS_MAP_DEPS += copy_datafiles
 QUARTUS_MAP_DEPS += copy_datafiles
 endif
@@ -13,14 +15,12 @@ endif
 else
 
 
-
 ifeq (,$(wildcard $(SYNTH_DIR)/scripts/$(TOP_MODULE)_project.f))
 QPF_FLAGS += -f $(SYNTH_DIR_A)/scripts/$(TOP_MODULE)_quartus.f
 endif
 
-DATAFILES += $(SYNTH_DIR)/scripts/$(TOP_MODULE).sdc
 
-$(TOP_MODULE).qpf : 
+$(TOP_MODULE).qpf : $(PRE_QPF_TARGETS)
 	echo "SYNTH_DIR=$(SYNTH_DIR)"
 	quartus_sh -t $(SYNTHSCRIPTS_DIR_A)/lib/altera/quartus_utils.tcl \
 		-project $(TOP_MODULE) \

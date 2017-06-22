@@ -18,8 +18,8 @@ else
 	SYNTH_DIR_A := $(SYNTH_DIR)
 endif
 
-DATAFILES_DST := $(shell echo $(DATAFILES) | sed -e 's@[^\s][^\s]*=\([^\s][^\s]*\)@\1@g')
-DATAFILES_SRC := $(shell echo $(DATAFILES) | sed -e 's@\([^\s][^\s]*\)=[^\s][^\s]*@\1@g')
+DATAFILES_DST = $(shell echo $(DATAFILES) | sed -e 's@[^\s][^\s]*=\([^\s][^\s]*\)@\1@g')
+DATAFILES_SRC = $(shell echo $(DATAFILES) | sed -e 's@\([^\s][^\s]*\)=[^\s][^\s]*@\1@g')
 	
 include $(SYNTHSCRIPTS_DIR)/mkfiles/synth_mk/synth_mk_$(TOOL).mk
 

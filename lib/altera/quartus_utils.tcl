@@ -41,6 +41,12 @@ proc main {argv} {
 		
 		if {$arg == "-project" || $arg == "-o" || $arg == "-output"} {
 			incr i
+		} elseif {$arg == "-do"} {
+			incr i
+			set arg [expand_vars [lindex $argv $i]]
+			puts "--> Sourcing $arg"
+			source $arg
+			puts "<-- Sourcing $arg"
 		} elseif {$arg == "-top"} {
 			incr i
 			set arg [expand_vars [lindex $argv $i]]
@@ -115,6 +121,8 @@ proc add_compile_options {argv} {
 				set_global_assignment -name SYSTEMVERILOG_FILE "$arg"
 			} elseif {$ext == ".sdc"} {
 				set_global_assignment -name SDC_FILE "$arg"
+			} elseif {$ext == ".qip"} {
+				set_global_assignment -name QIP_FILE "$arg"
 			} else {
 				puts "Error: Unknown file $arg"
 			}
