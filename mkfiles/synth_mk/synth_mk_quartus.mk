@@ -1,9 +1,9 @@
 
 ifneq (1,$(RULES))
 
-SIM_TARGETS += $(TOP_MODULE).qpf $(TOP_MODULE).map $(TOP_MODULE).fit $(TOP_MODULE).sim
+SIM_TARGETS += $(TOP_MODULE).qpf $(TOP_MODULE).map $(TOP_MODULE).fit $(TOP_MODULE).sta $(TOP_MODULE).sim
 
-IMG_TARGETS += $(TOP_MODULE).qpf $(TOP_MODULE).map $(TOP_MODULE).fit $(TOP_MODULE).sof $(TOP_MODULE).rbf
+IMG_TARGETS += $(TOP_MODULE).qpf $(TOP_MODULE).map $(TOP_MODULE).fit $(TOP_MODULE).sta $(TOP_MODULE).sof $(TOP_MODULE).rbf
 
 DATAFILES += $(SYNTH_DIR)/scripts/$(TOP_MODULE).sdc
 

@@ -13,13 +13,22 @@ use File::Basename;
 # Parameters
 # $SCRIPT=abs_path($0);
 # $SCRIPT_DIR=dirname($SCRIPT);
+#
+($sysname,$nodename,$release,$version,$machine) = POSIX::uname();
 
 $argfile_utils_pm="$ENV{SIMSCRIPTS_DIR}/lib/argfile_utils.pm";
 
 use lib '$argfile_utils_pm';
 
 $SYNTH_DIR=getcwd();
+$SYNTH_DIR_A=$SYNTH_DIR;
+
+if ($sysname =~ /CYGWIN/) {
+	$SYNTH_DIR_A =~ s%^/cygdrive/([a-zA-Z])%$1:%;
+}
+
 $ENV{SYNTH_DIR}=$SYNTH_DIR;
+$ENV{SYNTH_DIR_A}=$SYNTH_DIR_A;
 
 $max_par=2;
 $clean=0;
@@ -30,6 +39,11 @@ $debug="false";
 $builddir="";
 $device="cyclonev";
 $mk_sim="false";
+
+if ( -f ".synthscripts") {
+	print("Note: loading defaults from .synthscripts");
+	load_defaults(".synthscripts");
+}
 
 # Global PID list
 @pid_list;
@@ -75,7 +89,10 @@ for ($i=0; $i <= $#ARGV; $i++) {
 }
 
 
-$project=basename(dirname($SYNTH_DIR));
+if ($project eq "") {
+	$project=basename(dirname($SYNTH_DIR));
+}
+
 $run_root="${run_root}/${project}";
 print "run_root=$run_root\n";
 $ENV{RUN_ROOT}=$run_root;
@@ -126,6 +143,39 @@ if ($mksim eq "true") {
                     	"DEBUG=${debug}",
                     	"sim"
                     	);	
+}
+
+sub load_defaults {
+		my($dflt_file) = @_;
+	
+	open(my $fh, "<", $dflt_file) or 
+	  die "Failed to open defaults file $dflt_file";
+
+	while (my $line = <$fh>) {
+		chomp $line;
+		# Remove comments
+		$line =~ s%#.*$%%g;
+		$line =~ s/\s//g;
+		
+		unless ($line eq "") {
+			$var = $line;
+			$var =~ s/(\w+)=.*$/$1/;
+			$val = $line;
+			$val =~ s/.*=(\w+)$/$1/;
+		
+			if ($var eq "quiet") {
+				$quiet = $val;
+			} elsif ($var eq "debug") {
+				$debug = $val;
+			} elsif ($var eq "project") {
+				$project = $val;
+			} else {
+				print "Warning: unrecognized defaults variable $var\n";
+			}
+		}
+	}
+	
+	close($fh);	
 }
 
 exit 0;
