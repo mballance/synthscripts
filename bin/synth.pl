@@ -109,6 +109,16 @@ if ($builddir eq "") {
 $builddir = $builddir . "/synth";
 $ENV{BUILD_DIR}=$builddir;
 
+if ($sysname =~ /CYGWIN/) {
+	$builddir =~ s%^/cygdrive/([a-zA-Z])%$1:%;
+} elsif ($sysname =~ /MSYS/) {
+	$builddir =~ s%^/([a-zA-Z])%$1:/%;
+}
+
+print "builddir=$builddir sysname=$sysname\n";
+
+$ENV{BUILD_DIR_A}=$builddir;
+
 if ($quiet eq "") {
   $quiet=0;
 }
